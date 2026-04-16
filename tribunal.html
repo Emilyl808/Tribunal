@@ -655,6 +655,21 @@
       <button class="btn-convene" id="next-case-btn" style="display:none; opacity:0; transition: opacity 0.4s ease;"></button>
     </div><!-- #response -->
 
+    <div class="screen" id="end">
+      <p class="office-header">The Tribunal is Adjourned</p>
+      <hr>
+      <h1 class="tribunal-title">Your Record as Judge</h1>
+      <hr>
+      <div id="end-verdicts" style="font-family:'Courier Prime',monospace; font-size:0.85rem; line-height:2.2; color:var(--text);"></div>
+      <hr>
+      <blockquote class="intro-quote">
+        <p>&ldquo;Society prepares the crime, and the guilty are only the instruments by which it is executed.&rdquo;</p>
+        <cite>&mdash; A. Quetelet, Treatise on Man, 1835</cite>
+      </blockquote>
+      <hr>
+      <button class="btn-convene" onclick="adjourn()">Adjourn the Tribunal</button>
+    </div><!-- #end -->
+
   </div><!-- .container -->
 
   <script>
@@ -701,6 +716,8 @@
 
     const CASES = [
       {
+        caseNumber: 1,
+        crimeType: "Involuntary Manslaughter",
         caseTitle: "The Weight of the Neighborhood",
         defendantName: "Marcus T.",
         defendantAge: 19,
@@ -722,6 +739,8 @@
         readingsQuote: "Quetelet observed in his Treatise on Man (1835) that 'the greater the number of individuals observed, the more do individual peculiarities become effaced' — what we call a choice may be, at scale, a near-certainty."
       },
       {
+        caseNumber: 2,
+        crimeType: "Theft by Deception",
         caseTitle: "The Arithmetic of Survival",
         defendantName: "Renée M.",
         defendantAge: 52,
@@ -743,6 +762,8 @@
         readingsQuote: "Porter, in The Rise of Statistical Thinking (1986), argued that Quetelet's tables exposed something troubling: that what society calls 'crime' often traces back to conditions society itself produced and refused to remedy."
       },
       {
+        caseNumber: 3,
+        crimeType: "Fraud / Negligent Homicide",
         caseTitle: "The Respectable Harm",
         defendantName: "Thomas V.",
         defendantAge: 47,
@@ -764,6 +785,8 @@
         readingsQuote: "Gigerenzer's Empire of Chance (1989) shows that statistical thinking was never neutral — it emerged from specific institutions, aimed at specific populations, and what it 'discovers' about human behavior reflects those origins."
       },
       {
+        caseNumber: 4,
+        crimeType: "Aggravated Assault",
         caseTitle: "The Debt That Compounded",
         defendantName: "Yusuf A.",
         defendantAge: 34,
@@ -920,7 +943,7 @@
                   };
                 } else {
                   nextBtn.textContent = 'Deliver Final Judgment';
-                  nextBtn.onclick = () => console.log('closing');
+                  nextBtn.onclick = () => showEndScreen();
                 }
                 nextBtn.style.display = 'block';
                 requestAnimationFrame(() => { nextBtn.style.opacity = '1'; });
@@ -929,6 +952,23 @@
           }, 400);
         });
       }, 400);
+    }
+
+    function showEndScreen() {
+      const rows = state.caseData.map((cd, i) =>
+        '<div><span style="color:var(--text-dim)">Case ' + (i+1) + ':</span> ' + cd.caseTitle + ' &mdash; <span style="color:var(--accent-bright)">' + (state.userVerdicts[i] || '—') + '% culpable</span></div>'
+      ).join('');
+      document.getElementById('end-verdicts').innerHTML = rows;
+      transitionTo('end');
+    }
+
+    function adjourn() {
+      state.currentCase = 0;
+      state.caseData = [];
+      state.userVerdicts = [];
+      state.userJustifications = [];
+      state.phase = 'intro';
+      transitionTo('intro');
     }
 
     const defendantScenes = [
