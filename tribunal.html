@@ -604,10 +604,6 @@
       <button class="btn-case-file" id="read-case-btn" onclick="showCaseFile(state.currentCase)">Read the Case File</button>
     </div><!-- #defendant -->
 
-    <div class="screen" id="loading">
-      <p class="loading-text">Assembling case files...<span class="loading-cursor"></span></p>
-    </div><!-- #loading -->
-
     <div class="screen" id="case-file">
       <div class="case-header">
         <span class="case-meta" id="cf-case-number"></span>
@@ -703,69 +699,97 @@
       }, speed);
     }
 
-    const CASE_ARCHETYPES = [
-      'A violent crime (assault or homicide) committed by a young male in summer',
-      'A property crime (theft or burglary) committed in winter by a person living in poverty',
-      'A fraud or deception crime committed by a person of higher social standing',
-      'A crime of passion with ambiguous moral clarity \u2014 the line between victim and perpetrator is unclear'
+    const CASES = [
+      {
+        caseTitle: "The Weight of the Neighborhood",
+        defendantName: "Marcus T.",
+        defendantAge: 19,
+        defendantSex: "Male",
+        defendantOccupation: "Unemployed / Street dealer",
+        region: "High-poverty urban district",
+        season: "Summer",
+        crimeDescription: "Marcus began dealing at 17 after dropping out of school. He sold fentanyl-laced product to two teenagers, both of whom died. He did not know the supply was laced. He is charged with involuntary manslaughter.",
+        dramaticNarration: "The summer heat pressed down on streets where opportunity had long since departed. Marcus had watched his father taken away at age nine, watched his school close at fourteen, watched his friends choose the same corners for the same reasons. The supply came from above him, the risk landed below him, and two families now bury their children.",
+        queteletProbabilityScore: 81,
+        probabilityFactors: [
+          { factor: "Paternal incarceration", contribution: "Boys with incarcerated fathers are 3x more likely to face incarceration themselves (Bureau of Justice Statistics)" },
+          { factor: "School dropout, age 16", contribution: "Dropouts in high-crime ZIP codes face 4x higher conviction rates than graduates (Urban Institute, 2019)" },
+          { factor: "Neighborhood poverty rate >35%", contribution: "Quetelet observed crime rates rise in near-linear proportion to poverty density in urban parishes" },
+          { factor: "Age 17-21, male", contribution: "Young men in this cohort represent 38% of all drug-related convictions despite being 6% of the population" }
+        ],
+        statisticalVerdict: "Every measurable factor in this defendant's profile placed him in the highest-risk category before the age of ten. Statistical determinism assigns minimal individual culpability.",
+        queteletPushback: "The Court of Statistical Record notes that this defendant's trajectory was legible years before any crime occurred. Society constructed the conditions — the absent father, the closed school, the ignored neighborhood — and then expressed surprise at the result. To punish Marcus alone is to punish the instrument while exonerating the mechanism.",
+        readingsQuote: "Quetelet observed in his Treatise on Man (1835) that 'the greater the number of individuals observed, the more do individual peculiarities become effaced' — what we call a choice may be, at scale, a near-certainty."
+      },
+      {
+        caseTitle: "The Arithmetic of Survival",
+        defendantName: "Renée M.",
+        defendantAge: 52,
+        defendantSex: "Female",
+        defendantOccupation: "Home health aide / Caregiver",
+        region: "Rural post-industrial county",
+        season: "Winter",
+        crimeDescription: "Renée embezzled $4,200 from her employer over eight months to cover medical bills for two disabled family members in her care. She is the sole earner in the household. She is charged with theft by deception.",
+        dramaticNarration: "In the depths of winter, when heating costs doubled and medical copays came due, Renée's arithmetic became impossible. She had worked two jobs for eleven years. She had never missed a payment. Then the numbers stopped working, and she made them work another way. The employer noticed a discrepancy in February.",
+        queteletProbabilityScore: 74,
+        probabilityFactors: [
+          { factor: "Primary caregiver at time of offence", contribution: "74% of incarcerated women in the US were primary caregivers at the time of their arrest (Vera Institute, 2018)" },
+          { factor: "Financial crime, winter months", contribution: "Quetelet's tables show property crimes and fraud peak in winter across all European datasets — economic pressure, not moral failure" },
+          { factor: "Women 45-55", contribution: "The fastest-growing incarcerated demographic in the US — driven almost entirely by economic survival crimes" },
+          { factor: "Rural post-industrial area", contribution: "Counties with >15% manufacturing job loss show 2.3x higher rates of financial crimes by women in this cohort" }
+        ],
+        statisticalVerdict: "This offence follows a pattern documented across thousands of cases: a caregiver, a winter, an impossible budget. The statistics suggest near-inevitability given the structural conditions.",
+        queteletPushback: "The Court of Statistical Record notes that the regularity of cases like Renée's is itself an indictment — not of the individual, but of a system that places the full cost of social care on single earners and then criminalizes the arithmetic that results. Porter observed that statistical regularities 'reveal the action of social forces more clearly than any individual biography.'",
+        readingsQuote: "Porter, in The Rise of Statistical Thinking (1986), argued that Quetelet's tables exposed something troubling: that what society calls 'crime' often traces back to conditions society itself produced and refused to remedy."
+      },
+      {
+        caseTitle: "The Respectable Harm",
+        defendantName: "Thomas V.",
+        defendantAge: 47,
+        defendantSex: "Male",
+        defendantOccupation: "Senior Vice President, pharmaceutical firm",
+        region: "Financial district, major metropolitan area",
+        season: "Autumn",
+        crimeDescription: "Thomas falsified clinical trial data to secure FDA approval for a painkiller. Eleven patients died in the two years following approval before the falsification was discovered. He is charged with fraud and negligent homicide.",
+        dramaticNarration: "The boardroom was carpeted and climate-controlled. The decision took forty minutes. Thomas understood that the numbers did not support approval, and he changed the numbers. Eleven people who would otherwise have lived did not. He drove home that evening and attended his daughter's school recital.",
+        queteletProbabilityScore: 58,
+        probabilityFactors: [
+          { factor: "Managerial role with financial incentive", contribution: "Men 40-55 in executive roles represent 71% of corporate fraud cases (FBI Financial Crime Report, 2020)" },
+          { factor: "Institutional diffusion of responsibility", contribution: "Quetelet noted that 'moral crimes of deception' are systematically undercounted in educated, property-owning classes — the data itself is biased by who defines crime" },
+          { factor: "Low personal prosecution risk", contribution: "White-collar defendants face 40% lower conviction rates than working-class defendants charged with equivalent harm (Brookings, 2021)" },
+          { factor: "High social capital", contribution: "Access to legal resources, institutional trust, and social networks reduce both detection risk and sentencing severity" }
+        ],
+        statisticalVerdict: "The statistical profile suggests moderate individual culpability — though the data notes that crimes of this type are systematically under-prosecuted, meaning the true probability score is likely higher than recorded data shows.",
+        queteletPushback: "The Court of Statistical Record notes an irony: the same statistical apparatus used to predict and pre-judge the crimes of the poor is almost never applied to crimes of the powerful. Gigerenzer observed that the tools of probability carry their own politics — they were built for some populations and trained away from others.",
+        readingsQuote: "Gigerenzer's Empire of Chance (1989) shows that statistical thinking was never neutral — it emerged from specific institutions, aimed at specific populations, and what it 'discovers' about human behavior reflects those origins."
+      },
+      {
+        caseTitle: "The Debt That Compounded",
+        defendantName: "Yusuf A.",
+        defendantAge: 34,
+        defendantSex: "Male",
+        defendantOccupation: "Warehouse worker",
+        region: "Industrial outer borough",
+        season: "Spring",
+        crimeDescription: "Yusuf worked for the same employer for six years. Over that time, his employer repeatedly withheld overtime pay and threatened deportation if he complained. After a final confrontation in which the employer mocked him, Yusuf struck him twice. The employer sustained a broken nose. Yusuf is charged with aggravated assault.",
+        dramaticNarration: "Six years is a long time to absorb a wrong. Yusuf had done the math — reported the violations once, been told to be grateful, said nothing more. The spring morning when it finally broke was not different from any other morning, except that it was. The employer laughed. The arithmetic of humiliation has its own compound interest.",
+        queteletProbabilityScore: 69,
+        probabilityFactors: [
+          { factor: "Sustained wage theft over 4+ years", contribution: "Wage theft affects 17% of low-wage workers; violent incidents following unresolved labor grievances spike sharply after year 3 of non-resolution" },
+          { factor: "Immigration status weaponized by employer", contribution: "Undocumented workers are 60% less likely to report violations — meaning grievances accumulate rather than resolve (Economic Policy Institute, 2020)" },
+          { factor: "Chronic stress and workplace powerlessness", contribution: "Quetelet's tables show violent crimes cluster not in populations with the most deprivation, but in those with deprivation combined with blocked redress" },
+          { factor: "Single precipitating event after prolonged provocation", contribution: "Crimes of this type follow a well-documented buildup pattern — the 'final straw' is statistically predictable given the conditions" }
+        ],
+        statisticalVerdict: "The statistical record shows a man pushed past a threshold that was entirely predictable given the documented conditions. The crime was the last entry in a long ledger, most of which was written by someone else.",
+        queteletPushback: "The Court of Statistical Record notes that Yusuf's employer committed wage theft for six years without prosecution. The law moved only when the response became physical. Quetelet would observe that society's selective enforcement of its own rules is itself a variable — one that shapes behavior as surely as any other.",
+        readingsQuote: "Quetelet wrote in his Treatise on Man (1835) that 'society contains the germs of all the crimes which will be committed' — the question is always which germs society chooses to cultivate, and which it leaves to flourish unaddressed."
+      }
     ];
 
-    async function generateCase(n) {
-      const archetype = CASE_ARCHETYPES[n];
-      const userPrompt =
-        'Generate a case file JSON for Case ' + (n + 1) + ' of 4 in the Free Will Tribunal.\n\n' +
-        'Case archetype: ' + archetype + '\n\n' +
-        'Return ONLY a valid JSON object with exactly these fields:\n' +
-        '- caseNumber (integer 1-4)\n' +
-        '- caseTitle (short evocative title, e.g. "The Harvest Night Murder")\n' +
-        '- defendantName (19th-century European name)\n' +
-        '- defendantAge (integer)\n' +
-        '- defendantSex (string)\n' +
-        '- defendantOccupation (string)\n' +
-        '- region (Belgian or French region \u2014 Quetelet\'s data sources)\n' +
-        '- season (which season the crime occurred)\n' +
-        '- crimeType (one of: violent crime, property crime, fraud/deception, crime of passion)\n' +
-        '- crimeDescription (2-3 sentences of what happened)\n' +
-        '- dramaticNarration (3-4 sentences of atmospheric Gothic scene-setting, written like a 19th-century court recorder)\n' +
-        '- queteletProbabilityScore (integer 0-100, how statistically expected this crime was)\n' +
-        '- probabilityFactors (array of 3-4 objects, each with "factor" and "contribution" strings \u2014 these are Quetelet-style statistical observations)\n' +
-        '- statisticalVerdict (1-2 sentences: what cold statistical logic concludes about culpability)\n' +
-        '- queteletPushback (3-4 sentences arguing AGAINST assigning high individual culpability, in a cold formal statistical voice, beginning with "The Court of Statistical Record notes...")\n' +
-        '- readingsQuote (a short paraphrased insight attributed to one of: "Quetelet, Treatise on Man, 1835" or "Porter, Rise of Statistical Thinking, 1986" or "Gigerenzer, Empire of Chance, 1989")';
-
-      const body = {
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: 'You are the statistical record-keeper of a 19th-century criminal tribunal, steeped in the work of Adolphe Quetelet. You generate case files that dramatize the tension between individual free will and statistical determinism. Always respond with valid JSON only \u2014 no markdown, no preamble, no backticks.',
-        messages: [{ role: 'user', content: userPrompt }]
-      };
-
-      const attempt = async () => {
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        });
-        const data = await res.json();
-        return JSON.parse(data.content[0].text);
-      };
-
-      try {
-        return await attempt();
-      } catch (e) {
-        return await attempt();
-      }
-    }
-
-    async function convene() {
-      transitionTo('loading');
-      state.phase = 'loading';
-      state.caseData = [];
-      for (let i = 0; i < 4; i++) {
-        const caseObj = await generateCase(i);
-        state.caseData.push(caseObj);
-      }
+    function convene() {
+      state.caseData = CASES;
       state.currentCase = 0;
+      state.phase = 'cases';
       showDefendant(0);
     }
 
