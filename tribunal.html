@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Free Will Tribunal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0b08;
+      --bg-surface: #161410;
+      --text: #c9b99a;
+      --text-dim: #7a6e60;
+      --accent: #8b1a1a;
+      --accent-bright: #c0392b;
+      --border: #3a3228;
+      --parchment: #1e1a14;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Playfair Display', serif;
+      line-height: 1.7;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+      opacity: 0.7;
+    }
+
+    .screen {
+      display: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    /* ── Intro screen ── */
+
+    #intro {
+      animation: fadeIn 0.6s ease both;
+    }
+
+    .office-header {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
+    .tribunal-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: clamp(2rem, 6vw, 3rem);
+      text-align: center;
+      color: var(--text);
+      line-height: 1.2;
+      margin: 20px 0 10px;
+      animation: fadeIn 1.2s ease both;
+    }
+
+    .tribunal-subtitle {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1rem;
+      text-align: center;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .intro-quote {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--text-dim);
+      text-align: center;
+      padding: 0 24px;
+      animation: fadeIn 0.8s ease 1.8s both;
+    }
+
+    .intro-quote p {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .intro-quote cite {
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      font-style: normal;
+      color: var(--text-dim);
+      opacity: 0.75;
+    }
+
+    .intro-body {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--text);
+      text-align: center;
+      padding: 0 16px;
+      animation: fadeIn 0.8s ease 2.6s both;
+    }
+
+    .btn-convene {
+      display: block;
+      margin: 40px auto 0;
+      padding: 14px 40px;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--accent);
+      cursor: pointer;
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+      animation: fadeIn 0.6s ease 3.0s both;
+    }
+
+    .btn-convene:hover {
+      background: var(--accent);
+      color: var(--text);
+      border-color: var(--accent-bright);
+    }
+
+    .btn-convene:active {
+      background: var(--accent-bright);
+    }
+
+    /* ── Defendant SVG ── */
+
+    .defendant-svg {
+      opacity: 0;
+      transition: opacity 1.5s ease;
+    }
+
+    .defendant-svg.visible {
+      opacity: 1;
+    }
+
+    /* ── Defendant screen ── */
+
+    #svg-container {
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      line-height: 0;
+    }
+
+    #defendant-name {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      letter-spacing: 0.06em;
+      text-align: center;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    #defendant-descriptor {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.8rem;
+      font-variant: small-caps;
+      letter-spacing: 0.12em;
+      text-align: center;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+    }
+
+    .btn-case-file {
+      display: block;
+      margin: 0 auto;
+      padding: 14px 40px;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--accent);
+      cursor: pointer;
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .btn-case-file:hover {
+      background: var(--accent);
+      color: var(--text);
+      border-color: var(--accent-bright);
+    }
+
+    .btn-case-file:active {
+      background: var(--accent-bright);
+    }
+
+    /* ── Loading screen ── */
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    #loading {
+      text-align: center;
+      padding: 80px 0;
+    }
+
+    .loading-text {
+      font-family: 'Courier Prime', monospace;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+
+    .loading-cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1.1em;
+      background: var(--text-dim);
+      vertical-align: text-bottom;
+      margin-left: 3px;
+      animation: blink 1s step-end infinite;
+    }
+
+    /* ── Case file screen ── */
+
+    .case-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .case-meta {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .crime-type-badge {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-bright);
+      border: 1px solid var(--accent);
+      padding: 2px 8px;
+    }
+
+    .case-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(1.3rem, 3.5vw, 1.85rem);
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .section-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .defendant-grid {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 2;
+    }
+
+    .defendant-grid span {
+      color: var(--text-dim);
+    }
+
+    .narration-text {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.98rem;
+      color: var(--text);
+      line-height: 1.85;
+      min-height: 5.5em;
+    }
+
+    .stat-brief {
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      background: var(--parchment);
+      border: 1px solid var(--border);
+      padding: 22px 24px;
+    }
+
+    .stat-brief.visible {
+      opacity: 1;
+    }
+
+    .prob-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .prob-bar-track {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .prob-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 1.2s ease;
+    }
+
+    .factors-list {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.8rem;
+      color: var(--text);
+      list-style: none;
+      line-height: 1.75;
+    }
+
+    .factors-list li + li {
+      margin-top: 4px;
+    }
+
+    .factors-list li::before {
+      content: '• ';
+      color: var(--accent-bright);
+    }
+
+    .factors-list li span {
+      color: var(--text-dim);
+    }
+
+    /* ── Verdict section ── */
+
+    .verdict-section {
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      margin-top: 4px;
+    }
+
+    .verdict-section.visible {
+      opacity: 1;
+    }
+
+    .verdict-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+
+    .culpability-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .slider-endpoints {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.63rem;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+
+    .culpability-slider {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      background: var(--border);
+      outline: none;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .culpability-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-bright);
+      cursor: pointer;
+      border: 2px solid #8a7a6a;
+    }
+
+    .culpability-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-bright);
+      cursor: pointer;
+      border: 2px solid #8a7a6a;
+      box-sizing: border-box;
+    }
+
+    .slider-value {
+      font-family: 'Courier Prime', monospace;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent-bright);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .reasoning-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .reasoning-textarea {
+      display: block;
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.85rem;
+      padding: 12px;
+      resize: vertical;
+      margin-bottom: 20px;
+      line-height: 1.6;
+      outline: none;
+    }
+
+    .reasoning-textarea:focus {
+      border-color: var(--accent);
+    }
+
+    /* ── Response screen ── */
+
+    .pushback-block {
+      background: var(--parchment);
+      border: 1px solid var(--border);
+      padding: 22px 24px;
+      margin-bottom: 28px;
+    }
+
+    .pushback-header {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 14px;
+    }
+
+    .pushback-text {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 1.85;
+      min-height: 5em;
+    }
+
+    .stat-verdict-block {
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      border: 2px solid var(--accent);
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .stat-verdict-block.stamped {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .stat-verdict-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.02rem;
+      color: var(--accent-bright);
+      line-height: 1.7;
+    }
+
+    .readings-block {
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      text-align: center;
+      padding: 0 20px;
+      margin-bottom: 36px;
+    }
+
+    .readings-block.visible {
+      opacity: 1;
+    }
+
+    .readings-quote-text {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      margin-bottom: 8px;
+    }
+
+    .readings-attribution {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      opacity: 0.75;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="screen active" id="intro">
+
+      <p class="office-header">Office of Statistical Jurisprudence &mdash; Est. 1835</p>
+
+      <hr>
+
+      <h1 class="tribunal-title">The Free Will Tribunal</h1>
+      <p class="tribunal-subtitle">A Court of Statistical Inevitability</p>
+
+      <hr>
+
+      <blockquote class="intro-quote">
+        <p>&ldquo;Society prepares the crime, and the guilty are only the instruments by which it is executed.&rdquo;</p>
+        <cite>&mdash; A. Quetelet, Treatise on Man, 1835</cite>
+      </blockquote>
+
+      <hr>
+
+      <p class="intro-body">Before you are four cases. For each, you will be shown not just the crime &mdash; but the statistical forces that shaped it. You must decide: how culpable is the individual? How much belongs to fate?</p>
+
+      <button class="btn-convene" onclick="convene()">Convene the Tribunal</button>
+
+    </div><!-- #intro -->
+
+    <div class="screen" id="defendant">
+      <div id="svg-container"></div>
+      <h2 id="defendant-name">The Accused</h2>
+      <p id="defendant-descriptor"></p>
+      <button class="btn-case-file" id="read-case-btn" onclick="showCaseFile(state.currentCase)">Read the Case File</button>
+    </div><!-- #defendant -->
+
+    <div class="screen" id="loading">
+      <p class="loading-text">Assembling case files...<span class="loading-cursor"></span></p>
+    </div><!-- #loading -->
+
+    <div class="screen" id="case-file">
+      <div class="case-header">
+        <span class="case-meta" id="cf-case-number"></span>
+        <span class="crime-type-badge" id="cf-crime-type"></span>
+      </div>
+      <h2 class="case-title" id="cf-case-title"></h2>
+      <hr>
+      <p class="section-label">Defendant Profile</p>
+      <div class="defendant-grid" id="cf-defendant-grid"></div>
+      <hr>
+      <p class="narration-text" id="cf-narration"></p>
+      <hr>
+      <div class="stat-brief" id="cf-stat-brief">
+        <p class="section-label">Statistical Brief</p>
+        <p class="prob-label">Quetelet Probability Index: <span id="cf-prob-score"></span>%</p>
+        <div class="prob-bar-track"><div class="prob-bar-fill" id="cf-prob-bar"></div></div>
+        <p class="section-label">Contributing Factors</p>
+        <ul class="factors-list" id="cf-factors"></ul>
+      </div>
+      <div class="verdict-section" id="verdict-section">
+        <hr>
+        <p class="verdict-label">Your Verdict</p>
+        <hr>
+        <p class="culpability-label">Culpability</p>
+        <div class="slider-endpoints">
+          <span>0% &mdash; Statistical Fate</span>
+          <span>100% &mdash; Full Moral Responsibility</span>
+        </div>
+        <input type="range" class="culpability-slider" id="culpability-slider" min="0" max="100" value="50">
+        <p class="slider-value"><span id="slider-display">50</span>%</p>
+        <p class="reasoning-label">State your reasoning for the record:</p>
+        <textarea class="reasoning-textarea" id="reasoning-textarea" rows="4"></textarea>
+        <button class="btn-convene" onclick="deliverVerdict()">Deliver Verdict</button>
+      </div>
+    </div><!-- #case-file -->
+
+    <div class="screen" id="response">
+      <div class="pushback-block">
+        <p class="pushback-header">The Court of Statistical Record Responds:</p>
+        <p class="pushback-text" id="pushback-text"></p>
+      </div>
+      <div class="stat-verdict-block" id="stat-verdict-block">
+        <p class="stat-verdict-text" id="stat-verdict-text"></p>
+      </div>
+      <div class="readings-block" id="readings-block">
+        <p class="readings-quote-text" id="readings-quote-text"></p>
+        <p class="readings-attribution" id="readings-attribution"></p>
+      </div>
+      <button class="btn-convene" id="next-case-btn" style="display:none; opacity:0; transition: opacity 0.4s ease;"></button>
+    </div><!-- #response -->
+
+  </div><!-- .container -->
+
+  <script>
+    const state = {
+      currentCase: 0,
+      caseData: [],
+      userVerdicts: [],
+      userJustifications: [],
+      phase: 'intro'
+    };
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function transitionTo(screenId) {
+      const current = document.querySelector('.screen.active');
+      if (current) {
+        current.style.opacity = '0';
+        setTimeout(() => {
+          showScreen(screenId);
+          const next = document.getElementById(screenId);
+          next.style.opacity = '0';
+          requestAnimationFrame(() => { next.style.opacity = '1'; });
+        }, 300);
+      } else {
+        showScreen(screenId);
+      }
+    }
+
+    function typewrite(el, text, speed, onDone) {
+      el.textContent = '';
+      let i = 0;
+      const iv = setInterval(() => {
+        el.textContent += text[i];
+        i++;
+        if (i >= text.length) {
+          clearInterval(iv);
+          if (onDone) onDone();
+        }
+      }, speed);
+    }
+
+    const CASE_ARCHETYPES = [
+      'A violent crime (assault or homicide) committed by a young male in summer',
+      'A property crime (theft or burglary) committed in winter by a person living in poverty',
+      'A fraud or deception crime committed by a person of higher social standing',
+      'A crime of passion with ambiguous moral clarity \u2014 the line between victim and perpetrator is unclear'
+    ];
+
+    async function generateCase(n) {
+      const archetype = CASE_ARCHETYPES[n];
+      const userPrompt =
+        'Generate a case file JSON for Case ' + (n + 1) + ' of 4 in the Free Will Tribunal.\n\n' +
+        'Case archetype: ' + archetype + '\n\n' +
+        'Return ONLY a valid JSON object with exactly these fields:\n' +
+        '- caseNumber (integer 1-4)\n' +
+        '- caseTitle (short evocative title, e.g. "The Harvest Night Murder")\n' +
+        '- defendantName (19th-century European name)\n' +
+        '- defendantAge (integer)\n' +
+        '- defendantSex (string)\n' +
+        '- defendantOccupation (string)\n' +
+        '- region (Belgian or French region \u2014 Quetelet\'s data sources)\n' +
+        '- season (which season the crime occurred)\n' +
+        '- crimeType (one of: violent crime, property crime, fraud/deception, crime of passion)\n' +
+        '- crimeDescription (2-3 sentences of what happened)\n' +
+        '- dramaticNarration (3-4 sentences of atmospheric Gothic scene-setting, written like a 19th-century court recorder)\n' +
+        '- queteletProbabilityScore (integer 0-100, how statistically expected this crime was)\n' +
+        '- probabilityFactors (array of 3-4 objects, each with "factor" and "contribution" strings \u2014 these are Quetelet-style statistical observations)\n' +
+        '- statisticalVerdict (1-2 sentences: what cold statistical logic concludes about culpability)\n' +
+        '- queteletPushback (3-4 sentences arguing AGAINST assigning high individual culpability, in a cold formal statistical voice, beginning with "The Court of Statistical Record notes...")\n' +
+        '- readingsQuote (a short paraphrased insight attributed to one of: "Quetelet, Treatise on Man, 1835" or "Porter, Rise of Statistical Thinking, 1986" or "Gigerenzer, Empire of Chance, 1989")';
+
+      const body = {
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: 'You are the statistical record-keeper of a 19th-century criminal tribunal, steeped in the work of Adolphe Quetelet. You generate case files that dramatize the tension between individual free will and statistical determinism. Always respond with valid JSON only \u2014 no markdown, no preamble, no backticks.',
+        messages: [{ role: 'user', content: userPrompt }]
+      };
+
+      const attempt = async () => {
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        return JSON.parse(data.content[0].text);
+      };
+
+      try {
+        return await attempt();
+      } catch (e) {
+        return await attempt();
+      }
+    }
+
+    async function convene() {
+      transitionTo('loading');
+      state.phase = 'loading';
+      state.caseData = [];
+      for (let i = 0; i < 4; i++) {
+        const caseObj = await generateCase(i);
+        state.caseData.push(caseObj);
+      }
+      state.currentCase = 0;
+      showDefendant(0);
+    }
+
+    function showDefendant(index) {
+      const cd = state.caseData[index];
+      document.getElementById('svg-container').innerHTML = defendantScenes[index];
+      document.getElementById('defendant-name').textContent = cd.defendantName;
+      document.getElementById('defendant-descriptor').textContent = cd.defendantOccupation + ' \u2014 ' + cd.region;
+      transitionTo('defendant');
+      setTimeout(() => {
+        const svg = document.querySelector('#svg-container .defendant-svg');
+        if (svg) svg.classList.add('visible');
+      }, 600);
+    }
+
+    function showCaseFile(index) {
+      transitionTo('case-file');
+      setTimeout(() => populateCaseFile(index), 350);
+    }
+
+    function populateCaseFile(index) {
+      const cd = state.caseData[index];
+
+      document.getElementById('cf-case-number').textContent = 'Case File #' + cd.caseNumber;
+      document.getElementById('cf-crime-type').textContent = cd.crimeType;
+      document.getElementById('cf-case-title').textContent = cd.caseTitle;
+      document.getElementById('cf-defendant-grid').innerHTML =
+        '<div><span>Name:</span> ' + cd.defendantName + ' &nbsp;&nbsp; <span>Age:</span> ' + cd.defendantAge + ' &nbsp;&nbsp; <span>Sex:</span> ' + cd.defendantSex + '</div>' +
+        '<div><span>Occupation:</span> ' + cd.defendantOccupation + ' &nbsp;&nbsp; <span>Region:</span> ' + cd.region + '</div>' +
+        '<div><span>Season of offence:</span> ' + cd.season + '</div>';
+
+      const statBrief = document.getElementById('cf-stat-brief');
+      const verdictSection = document.getElementById('verdict-section');
+      statBrief.classList.remove('visible');
+      verdictSection.classList.remove('visible');
+
+      const probBar = document.getElementById('cf-prob-bar');
+      probBar.style.transition = 'none';
+      probBar.style.width = '0%';
+
+      typewrite(document.getElementById('cf-narration'), cd.dramaticNarration, 25, () => {
+        document.getElementById('cf-prob-score').textContent = cd.queteletProbabilityScore;
+        document.getElementById('cf-factors').innerHTML = cd.probabilityFactors.map(f =>
+          '<li><strong>' + f.factor + '</strong>: <span>' + f.contribution + '</span></li>'
+        ).join('');
+
+        setTimeout(() => {
+          statBrief.classList.add('visible');
+          setTimeout(() => {
+            probBar.style.transition = 'width 1.2s ease';
+            probBar.style.width = cd.queteletProbabilityScore + '%';
+          }, 50);
+          setTimeout(() => {
+            verdictSection.classList.add('visible');
+            document.getElementById('culpability-slider').value = 50;
+            document.getElementById('slider-display').textContent = '50';
+            document.getElementById('reasoning-textarea').value = '';
+          }, 900);
+        }, 200);
+      });
+    }
+
+    function deliverVerdict() {
+      const idx = state.currentCase;
+      state.userVerdicts[idx] = document.getElementById('culpability-slider').value;
+      state.userJustifications[idx] = document.getElementById('reasoning-textarea').value;
+      showResponse(idx);
+    }
+
+    function showResponse(index) {
+      const cd = state.caseData[index];
+      const pushbackEl = document.getElementById('pushback-text');
+      const stampBlock = document.getElementById('stat-verdict-block');
+      const readingsBlock = document.getElementById('readings-block');
+      const nextBtn = document.getElementById('next-case-btn');
+
+      stampBlock.classList.remove('stamped');
+      readingsBlock.classList.remove('visible');
+      nextBtn.style.display = 'none';
+      nextBtn.style.opacity = '0';
+
+      // Parse readingsQuote into text + attribution
+      let quoteStr = cd.readingsQuote || '';
+      let quoteText = quoteStr;
+      let attribution = '';
+      const srcList = [
+        'Quetelet, Treatise on Man, 1835',
+        'Porter, Rise of Statistical Thinking, 1986',
+        'Gigerenzer, Empire of Chance, 1989'
+      ];
+      for (const src of srcList) {
+        if (quoteStr.includes(src)) {
+          attribution = '\u2014 ' + src;
+          quoteText = quoteStr.slice(0, quoteStr.indexOf(src))
+            .replace(/\s*[\u2014\u2013\-]+\s*$/, '').trim()
+            .replace(/^[\u201c\u201d"']+|[\u201c\u201d"']+$/g, '').trim();
+          break;
+        }
+      }
+      if (!attribution) {
+        const emdash = quoteStr.lastIndexOf('\u2014');
+        if (emdash > 0) {
+          attribution = quoteStr.slice(emdash).trim();
+          quoteText = quoteStr.slice(0, emdash)
+            .replace(/^[\u201c\u201d"']+|[\u201c\u201d"']+$/g, '').trim();
+        } else {
+          quoteText = quoteStr.replace(/^[\u201c\u201d"']+|[\u201c\u201d"']+$/g, '').trim();
+        }
+      }
+
+      document.getElementById('stat-verdict-text').textContent = cd.statisticalVerdict;
+      document.getElementById('readings-quote-text').textContent = '\u201c' + quoteText + '\u201d';
+      document.getElementById('readings-attribution').textContent = attribution;
+
+      transitionTo('response');
+      setTimeout(() => {
+        typewrite(pushbackEl, cd.queteletPushback, 22, () => {
+          setTimeout(() => {
+            stampBlock.classList.add('stamped');
+            setTimeout(() => {
+              readingsBlock.classList.add('visible');
+              setTimeout(() => {
+                if (state.currentCase < 3) {
+                  nextBtn.textContent = 'Proceed to Next Case';
+                  nextBtn.onclick = () => {
+                    state.currentCase++;
+                    showDefendant(state.currentCase);
+                  };
+                } else {
+                  nextBtn.textContent = 'Deliver Final Judgment';
+                  nextBtn.onclick = () => console.log('closing');
+                }
+                nextBtn.style.display = 'block';
+                requestAnimationFrame(() => { nextBtn.style.opacity = '1'; });
+              }, 700);
+            }, 500);
+          }, 400);
+        });
+      }, 400);
+    }
+
+    const defendantScenes = [
+
+      // Case 1 — young male, violent crime
+      `<svg class="defendant-svg" viewBox="0 0 700 420" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="light1" cx="50%" cy="0%" r="70%">
+            <stop offset="0%" stop-color="#c8924a" stop-opacity="0.55"/>
+            <stop offset="100%" stop-color="#c8924a" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="700" height="420" fill="#0d0b08"/>
+        <path d="M 272 245 L 272 112 Q 350 22 428 112 L 428 245 Z" fill="#1a1410"/>
+        <rect width="700" height="420" fill="url(#light1)" opacity="0.3"/>
+        <rect x="0" y="284" width="700" height="136" fill="#2a1f14"/>
+        <rect x="0" y="281" width="700" height="5" fill="#3d2e1e"/>
+        <polygon points="255,216 445,216 420,282 280,282" fill="#2d2418"/>
+        <polygon points="255,216 234,224 238,282 278,282" fill="#2d2418"/>
+        <polygon points="445,216 466,224 462,282 422,282" fill="#2d2418"/>
+        <rect x="344" y="194" width="12" height="24" fill="#2d2418"/>
+        <circle cx="350" cy="168" r="32" fill="#2d2418"/>
+        <rect x="228" y="278" width="30" height="9" rx="2" fill="#2d2418"/>
+        <rect x="442" y="278" width="30" height="9" rx="2" fill="#2d2418"/>
+        <ellipse cx="350" cy="200" rx="9" ry="5" fill="#8b1a1a"/>
+      </svg>`,
+
+      // Case 2 — older figure, poverty, winter
+      `<svg class="defendant-svg" viewBox="0 0 700 420" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="light2" cx="50%" cy="0%" r="70%">
+            <stop offset="0%" stop-color="#c8924a" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#c8924a" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="700" height="420" fill="#0d0b08"/>
+        <rect width="700" height="420" fill="#080c14" opacity="0.38"/>
+        <path d="M 272 245 L 272 112 Q 350 22 428 112 L 428 245 Z" fill="#141620"/>
+        <rect width="700" height="420" fill="url(#light2)" opacity="0.25"/>
+        <rect x="0" y="284" width="700" height="136" fill="#2a1f14"/>
+        <rect x="0" y="281" width="700" height="5" fill="#3d2e1e"/>
+        <polygon points="305,216 395,216 388,282 312,282" fill="#2d2418"/>
+        <ellipse cx="304" cy="212" rx="20" ry="13" fill="#2d2418"/>
+        <ellipse cx="396" cy="212" rx="20" ry="13" fill="#2d2418"/>
+        <polygon points="304,213 286,222 292,282 314,282" fill="#2d2418"/>
+        <polygon points="396,213 414,222 408,282 386,282" fill="#2d2418"/>
+        <rect x="346" y="198" width="8" height="19" fill="#2d2418"/>
+        <circle cx="350" cy="174" r="26" fill="#2d2418"/>
+        <ellipse cx="337" cy="282" rx="23" ry="10" fill="#2d2418"/>
+        <ellipse cx="363" cy="282" rx="23" ry="10" fill="#2d2418"/>
+        <ellipse cx="350" cy="205" rx="8" ry="4" fill="#4a5a72"/>
+      </svg>`,
+
+      // Case 3 — fraud, well-dressed
+      `<svg class="defendant-svg" viewBox="0 0 700 420" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="light3" cx="50%" cy="0%" r="70%">
+            <stop offset="0%" stop-color="#c8924a" stop-opacity="0.55"/>
+            <stop offset="100%" stop-color="#c8924a" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="700" height="420" fill="#0d0b08"/>
+        <path d="M 272 245 L 272 112 Q 350 22 428 112 L 428 245 Z" fill="#1a1410"/>
+        <rect width="700" height="420" fill="url(#light3)" opacity="0.3"/>
+        <rect x="0" y="284" width="700" height="136" fill="#2a1f14"/>
+        <rect x="0" y="281" width="700" height="5" fill="#3d2e1e"/>
+        <polygon points="262,204 438,204 420,282 280,282" fill="#2d2418"/>
+        <polygon points="334,205 350,246 318,205" fill="#251d12"/>
+        <polygon points="366,205 350,246 382,205" fill="#251d12"/>
+        <polygon points="262,204 245,211 250,282 282,282" fill="#2d2418"/>
+        <polygon points="438,204 455,211 450,282 418,282" fill="#2d2418"/>
+        <rect x="346" y="192" width="10" height="13" fill="#2d2418"/>
+        <ellipse cx="352" cy="165" rx="29" ry="30" fill="#2d2418" transform="rotate(4,352,165)"/>
+        <rect x="242" y="278" width="22" height="8" rx="2" fill="#2d2418"/>
+        <rect x="436" y="278" width="22" height="8" rx="2" fill="#2d2418"/>
+        <polygon points="347,199 353,199 357,226 350,233 343,226" fill="#8b1a1a"/>
+      </svg>`,
+
+      // Case 4 — crime of passion, ambiguous
+      `<svg class="defendant-svg" viewBox="0 0 700 420" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="light4" cx="50%" cy="0%" r="70%">
+            <stop offset="0%" stop-color="#c8924a" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#c8924a" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <rect width="700" height="420" fill="#0d0b08"/>
+        <path d="M 272 245 L 272 112 Q 350 22 428 112 L 428 245 Z" fill="#1a1410"/>
+        <rect width="700" height="420" fill="url(#light4)" opacity="0.3"/>
+        <rect x="0" y="284" width="700" height="136" fill="#2a1f14"/>
+        <rect x="0" y="281" width="700" height="5" fill="#3d2e1e"/>
+        <polygon points="294,213 406,213 396,282 304,282" fill="#2d2418"/>
+        <polygon points="406,216 424,222 418,282 398,282" fill="#2d2418"/>
+        <rect x="417" y="278" width="30" height="9" rx="3" fill="#2d2418"/>
+        <rect x="346" y="207" width="10" height="8" fill="#2d2418"/>
+        <ellipse cx="346" cy="193" rx="28" ry="30" fill="#2d2418" transform="rotate(13,346,193)"/>
+        <polygon points="294,216 275,224 268,318 292,318" fill="#2d2418"/>
+        <ellipse cx="280" cy="318" rx="14" ry="8" fill="#2d2418"/>
+        <path d="M 428,273 Q 443,268 454,274 Q 450,281 440,284 Q 430,284 427,279 Z" fill="#8b1a1a" opacity="0.82"/>
+        <ellipse cx="449" cy="274" rx="5" ry="3" fill="#8b1a1a" opacity="0.5"/>
+      </svg>`
+
+    ];
+
+    document.getElementById('culpability-slider').addEventListener('input', function () {
+      document.getElementById('slider-display').textContent = this.value;
+    });
+  </script>
+</body>
+</html>
